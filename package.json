@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "api-start-dev": "NODE_ENV=production node ./src/server.js",
-    "api-start-prod": "nodemon ./src/server.js",
+    "api-start-prod": "NODE_ENV=production node ./src/server.js",
+    "api-start-dev": "nodemon ./src/server.js",
     "lint": "eslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
