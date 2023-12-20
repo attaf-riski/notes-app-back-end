@@ -2,6 +2,7 @@ const {Pool} = require('pg');
 const {nanoid} = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 const {mapDBToModel} = require('../../utils');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 /* eslint-disable require-jsdoc */
 class NotesService {
@@ -68,8 +69,7 @@ class NotesService {
     };
 
     const result = await this._pool.query(query);
-
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Catatan gagal dihapus. Id tidak ditemukan');
     }
   }
