@@ -24,6 +24,11 @@ const routes = (handler) => [
     },
   },
   {
+    method: 'GET',
+    path: '/users',
+    handler: handler.getUsersByUsernameHandler,
+  },
+  {
     method: 'PUT',
     path: '/notes/{id}',
     handler: handler.putNoteByIdHandler,
