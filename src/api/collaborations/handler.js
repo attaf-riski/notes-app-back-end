@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
+const ClientError = require('../../exceptions/ClientError');
+
 class CollaborationsHandler {
   constructor(collaborationsService, notesService, validator) {
     this._collaborationsService = collaborationsService;
@@ -11,21 +13,39 @@ class CollaborationsHandler {
   }
 
   async postCollaborationHandler(request, h) {
-    this._validator.validateCollaborationPayload(request.payload);
-    const {id: credentialId} = request.auth.credentials;
-    const {noteId, userId} = request.payload;
-    await this._notesService.verifyNoteOwner(noteId, credentialId);
-    console.log(noteId, userId);
-    const collaborationId = await this._collaborationsService.addCollaboration(noteId, userId);
-    const response = h.response({
-      status: 'success',
-      message: 'Kolaborasi berhasil ditambahkan',
-      data: {
-        collaborationId,
-      },
-    });
-    response.code(201);
-    return response;
+    try {
+      this._validator.validateCollaborationPayload(request.payload);
+      const {id: credentialId} = request.auth.credentials;
+      const {noteId, userId} = request.payload;
+      await this._notesService.verifyNoteOwner(noteId, credentialId);
+      const collaborationId = await this._collaborationsService.addCollaboration(noteId, userId);
+      const response = h.response({
+        status: 'success',
+        message: 'Kolaborasi berhasil ditambahkan',
+        data: {
+          collaborationId,
+        },
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      return response;
+    }
   }
 
   async deleteCollaborationHandler(request, h) {

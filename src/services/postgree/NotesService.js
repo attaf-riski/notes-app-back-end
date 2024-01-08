@@ -96,7 +96,9 @@ class NotesService {
       throw new NotFoundError('Catatan tidak ditemukan');
     }
     const note = result.rows[0];
+    console.log(note);
     if (note.owner !== owner) {
+      console.log('masuk');
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
   }
@@ -114,6 +116,14 @@ class NotesService {
         throw error;
       }
     }
+  }
+  async getUsersByUsername(username) {
+    const query = {
+      text: 'SELECT id, username, fullname FROM users WHERE username LIKE $1',
+      values: [`%${username}%`],
+    };
+    const result = await this._pool.query(query);
+    return result.rows;
   }
 }
 
